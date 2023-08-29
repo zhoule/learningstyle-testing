@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧芽成长日 - 学习风格测试</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+         body {
+            background: linear-gradient(45deg, #FFA500, #FFC0CB); 
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background-color: #fda085;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #f6d365;
+        }
+
+        .question p {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover, .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .generated-by {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+
+      #balloon-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+            font-size: 24px; /* 根据你的实际需要设置大小 */
+        }
+
+        .balloon {
+            position: absolute;
+            color: rgba(255, 0, 0, 0.7);
+            animation: rise linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -5%;
+            }
+            100% {
+                top: 110%;
+            }
+        }
+
+        .icon {
+            position: fixed;
+            font-size: 32px; /* 将星星的基本大小增大 */
+            animation: fall 5s linear infinite;
+            opacity: 0;
+            z-index: 9999;  /* 确保星星在最前面 */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="balloon-container"></div>
+    <div class="container">
+        <h1>智慧芽成长日 - 学习风格测试</h1>
+        <form id="testForm">
+            <div id="questionsContainer"></div>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+
+     <!-- Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>你的学习风格是：</h2>
+            <p id="resultText"></p>
+        </div>
+    </div>
+    <p class="generated-by">这段代码由ChatGPT生成 - 2023.08.29</p>
+    <script>
+
+        function showBalloons() {
+            for (let i = 0; i < 100; i++) {
+                createIcon();
+            }
+        }
+
+        function createIcon() {
+            const icon = document.createElement('span');
+            icon.classList.add('icon');
+            icon.innerHTML = '✨';
+            document.body.appendChild(icon);
+            
+            // 设置其初始位置和其他随机特性
+            icon.style.left = `${Math.random() * 100}vw`;
+            icon.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            icon.style.opacity = Math.random();
+            icon.style.fontSize = `${Math.random() * 30 + 20}px`; // 增大星星的最大大小
+            
+            
+            // 5秒后自动删除，与动画时间相同
+            setTimeout(() => {
+                icon.remove();
+            }, 5000);
+        }
+
+        // 然后，确保在 showModal 函数中调用 showConfetti
+        function showModal() {
+            let modal = document.getElementById('resultModal');
+            modal.style.display = 'block';
+            showBalloons();  // 添加这一行
+        }
+
+        function closeModal() {
+            document.getElementById("resultModal").style.display = "none";
+        }
+
+
+        function submitAnswers() {
+            let completed = true;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                if (!selected) {
+                    completed = false;
+                }
+            });
+
+            if (!completed) {
+                let result = document.getElementById('resultText');
+                result.innerText = "请确保所有问题都已回答！";
+                showModal();
+                return;
+            }
+
+            // 使用数字0, 1, 2, 3替代ABCD进行结果计算
+            let scoreA = document.querySelectorAll('input[value="0"]:checked').length;
+            let scoreB = document.querySelectorAll('input[value="1"]:checked').length;
+            let scoreC = document.querySelectorAll('input[value="2"]:checked').length;
+            let scoreD = document.querySelectorAll('input[value="3"]:checked').length;
+
+            let maxScore = Math.max(scoreA, scoreB, scoreC, scoreD);
+            let result = document.getElementById('resultText');
+            if (maxScore === scoreA) {
+                result.innerText = "领悟型: 喜欢调动自己的情感体验。";
+            } else if (maxScore === scoreB) {
+                result.innerText = "概念型: 喜欢思考。";
+            } else if (maxScore === scoreC) {
+                result.innerText = "实践型: 喜欢做中学。";
+            } else if (maxScore === scoreD) {
+                result.innerText = "观察型: 喜欢看和听。";
+            }
+
+            showModal();
+        }
+
+        function showFirework() {
+            let firework = document.createElement("div");
+            firework.classList.add("firework");
+            let before = document.createElement("div");
+            before.classList.add("before");
+            let after = document.createElement("div");
+            after.classList.add("after");
+            firework.appendChild(before);
+            firework.appendChild(after);
+
+            document.body.appendChild(firework);
+
+            setTimeout(() => {
+                document.body.removeChild(firework);
+            }, 1000);
+        }
+
+        const questions = [
+            {
+                "text": "我在学习过程中：",
+                "options": [
+                    "喜欢调动自己的情感体验",
+                    "喜欢思考",
+                    "喜欢做中学",
+                    "喜欢看和听"
+                ]
+            },
+            {
+                "text": "我感觉什么时候学习效果最好：",
+                "options": [
+                    "认真聆听并观察的时候",
+                    "借助逻辑思考的时候",
+                    "相信自己的预感和体验的时候",
+                    "努力将事情做完的时候"
+                ]
+            },
+            {
+                "text": "我在学习过程中：",
+                "options": [
+                    "喜欢推理",
+                    "认真负责",
+                    "安静而沉稳",
+                    "有强烈的情感反应"
+                ]
+            },
+            {
+                "text": "我采用什么方式学习：",
+                "options": [
+                    "情感体验",
+                    "实践",
+                    "观察",
+                    "思考"
+                ]
+            },
+            {
+                "text": "我学习的时候：",
+                "options": [
+                    "对新的体验、新经历采取开放的态度",
+                    "会多方位地观察问题",
+                    "喜欢分析事物，将整体分解成各部分",
+                    "喜欢试验"
+                ]
+            },
+            {
+                "text": "我在学习的时候：",
+                "options": [
+                    "乐于观察",
+                    "积极活跃",
+                    "看重直觉",
+                    "偏重逻辑思维"
+                ]
+            },
+            {
+                "text": "通过什么途径我会学得最好：",
+                "options": [
+                    "观察",
+                    "人际间互动",
+                    "合理的理论",
+                    "有机会试验和实践"
+                ]
+            },
+            {
+                "text": "我学习的时候：",
+                "options": [
+                    "喜欢看到自己的学习成效",
+                    "喜欢理念和理论",
+                    "倾向行动前做好充足的准备",
+                    "喜欢全身心投入学习"
+                ]
+            },
+            {
+                "text": "什么时候我学得最好：",
+                "options": [
+                    "依赖观察时",
+                    "凭借感觉时",
+                    "己尝试做时",
+                    "思考时"
+                ]
+            },
+            {
+                "text": "我在学习中：",
+                "options": [
+                    "是个心静、含蓄的人",
+                    "是个乐于接受的人",
+                    "是个负责的人",
+                    "是个理性的人"
+                ]
+            },
+            {
+                "text": "我学习时：",
+                "options": [
+                    "乐于投入其中",
+                    "喜欢观察",
+                    "喜欢对事情作评价",
+                    "乐于积极行动"
+                ]
+            },
+            {
+                "text": "什么时候我可以得到最理想的学习效果：",
+                "options": [
+                    "进行思考分析时",
+                    "乐于接受、思想开放时",
+                    "认真仔细时",
+                    "学以致用时"
+                ]
+            }
+        ];
+
+        function loadQuestions() {
+            const container = document.getElementById("questionsContainer");
+            questions.forEach((q, index) => {
+                let questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                
+                let questionText = document.createElement("p");
+                questionText.textContent = q.text;
+                questionDiv.appendChild(questionText);
+
+                q.options.forEach((option, optionIndex) => {
+                    let label = document.createElement("label");
+                    label.innerHTML = `<input type="radio" name="question${index}" value="${optionIndex}">${option}`;
+                    questionDiv.appendChild(label);
+                });
+
+                container.appendChild(questionDiv);
+            });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('testForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                submitAnswers();
+            });
+        });
+
+         // Initially load the questions
+        loadQuestions();
+    </script>
+</body>
+
+</html>
