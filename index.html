@@ -137,6 +137,23 @@
             z-index: 9999;  /* 确保星星在最前面 */
         }
 
+        @media screen and (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 10px;
+            }
+
+            h1, h2 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+        }
+
+
     </style>
 </head>
 
@@ -197,6 +214,41 @@
             document.getElementById("resultModal").style.display = "none";
         }
 
+        function createQuestionElement(question, index) {
+            let questionDiv = document.createElement("div");
+            questionDiv.classList.add("question");
+
+            let questionText = document.createElement("p");
+            questionText.textContent = question.text;
+            questionDiv.appendChild(questionText);
+
+            question.options.forEach((option, optionIndex) => {
+                let label = document.createElement("label");
+                label.innerHTML = `<input type="radio" name="question${index}" value="${optionIndex}">${option}`;
+                questionDiv.appendChild(label);
+            });
+
+            return questionDiv;
+        }
+
+        function loadQuestions() {
+            const container = document.getElementById("questionsContainer");
+            questions.forEach((q, index) => {
+                const questionElement = createQuestionElement(q, index);
+                container.appendChild(questionElement);
+            });
+        }
+
+        function highlightUnansweredQuestions() {
+            document.querySelectorAll(".question").forEach((questionDiv, index) => {
+                const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                if (!selected) {
+                    questionDiv.style.backgroundColor = "#ffeeee"; // 添加一个淡红色背景来突出显示
+                } else {
+                    questionDiv.style.backgroundColor = ""; // 移除背景颜色
+                }
+            });
+        }
 
         function submitAnswers() {
             let completed = true;
@@ -210,10 +262,11 @@
             if (!completed) {
                 let result = document.getElementById('resultText');
                 result.innerText = "请确保所有问题都已回答！";
+                highlightUnansweredQuestions(); // 如果有未回答的问题，高亮显示它们
                 showModal();
                 return;
             }
-
+            
             // 使用数字0, 1, 2, 3替代ABCD进行结果计算
             let scoreA = document.querySelectorAll('input[value="0"]:checked').length;
             let scoreB = document.querySelectorAll('input[value="1"]:checked').length;
@@ -233,23 +286,6 @@
             }
 
             showModal();
-        }
-
-        function showFirework() {
-            let firework = document.createElement("div");
-            firework.classList.add("firework");
-            let before = document.createElement("div");
-            before.classList.add("before");
-            let after = document.createElement("div");
-            after.classList.add("after");
-            firework.appendChild(before);
-            firework.appendChild(after);
-
-            document.body.appendChild(firework);
-
-            setTimeout(() => {
-                document.body.removeChild(firework);
-            }, 1000);
         }
 
         const questions = [
