@@ -61,23 +61,33 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
         }
 
         .modal-content {
-            background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
+            width: 70%;
+            position: relative;
+            background-color: #fff;
             border-radius: 8px;
+            display: flex;
+            align-items: center; 
         }
+
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
 
         .close {
             color: #aaa;
@@ -161,6 +171,11 @@
     <div id="balloon-container"></div>
     <div class="container">
         <h1>智慧芽成长日 - 学习风格测试</h1>
+        <p>哈喽各位智慧芽儿~</p>
+        <p>你好！本测试旨在了解您的学习方式、思维活动方式以及您处理日常生活情景的方式。下面有12个问题，每个问题都有四个答案选项。每一个选项都无所谓对与错，只是反映了你的学习偏好与倾向。请您尽量以近期（两周内）的学习情况为依据，按照每个答案选项与您实际情况相符合的程度，给予相应的打分，并把分数填写答题纸的相应位置上。</p>
+        <p>如果您清楚了打分标准，就请完成以下的问题：</p>
+
+        <div id="resultText"></div>
         <form id="testForm">
             <div id="questionsContainer"></div>
             <button type="submit">提交</button>
@@ -169,11 +184,12 @@
 
      <!-- Modal -->
     <div id="resultModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>你的学习风格是：</h2>
-            <p id="resultText"></p>
-        </div>
+      <div class="modal-content">
+        <img id="typeA" src="result_a.png" alt="Type A" style="display:none;max-width:100%;height: auto;">
+        <img id="typeB" src="result_b.png" alt="Type B" style="display:none;max-width:100%;height: auto;">
+        <img id="typeC" src="result_c.png" alt="Type C" style="display:none;max-width:100%;height: auto;">
+        <img id="typeD" src="result_d.png" alt="Type D" style="display:none;max-width:100%;height: auto;">
+      </div>
     </div>
     <p class="generated-by">这段代码由ChatGPT生成 - 2023.08.29</p>
     <script>
@@ -212,6 +228,27 @@
 
         function closeModal() {
             document.getElementById("resultModal").style.display = "none";
+        }
+
+        function showResult(type) {
+            // Hide all images first
+            ['typeA', 'typeB', 'typeC', 'typeD'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            
+            // Show the corresponding image based on the type
+            document.getElementById(type).style.display = 'block';
+            
+            // Display the modal
+            document.getElementById('resultModal').style.display = 'block';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
         }
 
         function createQuestionElement(question, index) {
@@ -263,7 +300,6 @@
                 let result = document.getElementById('resultText');
                 result.innerText = "请确保所有问题都已回答！";
                 highlightUnansweredQuestions(); // 如果有未回答的问题，高亮显示它们
-                showModal();
                 return;
             }
             
@@ -276,13 +312,13 @@
             let maxScore = Math.max(scoreA, scoreB, scoreC, scoreD);
             let result = document.getElementById('resultText');
             if (maxScore === scoreA) {
-                result.innerText = "领悟型: 喜欢调动自己的情感体验。";
+                showResult('typeA');
             } else if (maxScore === scoreB) {
-                result.innerText = "概念型: 喜欢思考。";
+                showResult('typeB');
             } else if (maxScore === scoreC) {
-                result.innerText = "实践型: 喜欢做中学。";
+                showResult('typeC');
             } else if (maxScore === scoreD) {
-                result.innerText = "观察型: 喜欢看和听。";
+                showResult('typeD');
             }
 
             showModal();
