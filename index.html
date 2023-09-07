@@ -307,6 +307,12 @@
 
             if (!completed) {
                 let result = document.getElementById('resultText');
+                result.style.color = 'red';
+                result.style.fontWeight = 'bold';
+                result.style.fontSize = '20px';
+                result.style.backgroundColor = '#ffdddd';
+                result.style.textAlign = 'center';
+                result.style.padding = '10px';
                 result.innerText = "请确保所有问题都已回答！";
                 highlightUnansweredQuestions(); // 如果有未回答的问题，高亮显示它们
                 return;
